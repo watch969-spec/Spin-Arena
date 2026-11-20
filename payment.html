@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spin Arena | Rewards & Payment</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #090b12;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    .top-nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 15px;
+      background: #111521;
+      border-bottom: 1px solid #292f40;
+    }
+    .top-nav a {
+      text-decoration: none;
+      color: #ddd;
+      padding: 9px 14px;
+      border-radius: 7px;
+      background: #202638;
+      font-size: 14px;
+    }
+    .top-nav a.active {
+      background: #e8b94e;
+      color: #17110a;
+      font-weight: bold;
+    }
+    .payment-container {
+      width: 100%;
+      max-width: 950px;
+      margin: 28px auto;
+      padding: 16px;
+    }
+    .page-title {
+      text-align: center;
+      color: #f6c453;
+      font-size: 29px;
+      margin-bottom: 8px;
+    }
+    .page-subtitle {
+      text-align: center;
+      color: #aaa;
+      margin-bottom: 25px;
+    }
+    .wallet-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .wallet-card {
+      padding: 23px;
+      border-radius: 17px;
+      background: linear-gradient(135deg, #19243a, #101521);
+      border: 1px solid #344766;
+      min-width: 0;
+      text-align: center;
+    }
+    .wallet-card.payment {
+      background: linear-gradient(135deg, #123426, #101c19);
+      border-color: #26845a;
+    }
+    .wallet-label {
+      color: #c3c9d5;
+      font-size: 14px;
+    }
+    .wallet-value {
+      font-size: 34px;
+      font-weight: bold;
+      margin: 12px 0 7px;
+      overflow-wrap: anywhere;
+      color: #ffd36a;
+    }
+    .wallet-card.payment .wallet-value {
+      color: #5ee0a0;
+    }
+    .wallet-note {
+      color: #aaa;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .conversion-rate {
+      text-align: center;
+      padding: 15px;
+      border: 1px dashed #b88b36;
+      border-radius: 12px;
+      color: #ffd36a;
+      margin-bottom: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .section-card {
+      background: #141824;
+      border: 1px solid #292f40;
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+    .section-card h2 {
+      color: #f6c453;
+      font-size: 21px;
+      margin: 0 0 18px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      color: #ddd;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 13px;
+      border-radius: 9px;
+      border: 1px solid #343b50;
+      background: #0b0e17;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+    .form-group input:focus {
+      border-color: #e9b94d;
+    }
+    .gold-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #f9d477, #bd8522);
+      border: none;
+      border-radius: 9px;
+      color: #17110a;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+    .green-btn {
+      background: linear-gradient(135deg, #65e5a5, #218653);
+      color: #071b11;
+    }
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .history-item {
+      background: #0d111c;
+      border: 1px solid #30374a;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .history-item p {
+      color: #bbb;
+      line-height: 1.5;
+      margin: 7px 0;
+      overflow-wrap: anywhere;
+    }
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #292f40;
+      color: #f6c453;
+      font-size: 12px;
+      text-transform: capitalize;
+    }
+    .status.approved, .status.paid, .status.completed {
+      background: #143d2b;
+      color: #5ee0a0;
+    }
+    .status.rejected, .status.failed {
+      background: #3d1414;
+      color: #ff7b7b;
+    }
+    .message {
+      color: #ffd36a;
+      font-size: 14px;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+    .note {
+      color: #aaa;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 13px;
+    }
+    .empty {
+      color: #999;
+      text-align: center;
+      padding: 18px;
+    }
+    @media (max-width: 600px) {
+      .payment-container { margin: 15px auto; padding: 12px; }
+      .wallet-grid { grid-template-columns: 1fr; }
+      .section-card { padding: 16px; }
+      .page-title { font-size: 25px; }
+      .wallet-value { font-size: 30px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="top-nav">
+    <a href="index.html">Home</a>
+    <a href="wallet.html">Wallet</a>
+    <a href="profile.html">Profile</a>
+    <a href="payment.html" class="active">Payment</a>
+  </nav>
+
+  <main class="payment-container">
+
+    <h1 class="page-title">🏆 Spin Arena Rewards</h1>
+    <p class="page-subtitle">Your Spin Coins & Payment Wallet</p>
+
+    <div class="wallet-grid">
+      <section class="wallet-card">
+        <div class="wallet-label">🎮 Spin Coin Wallet</div>
+        <div class="wallet-value" id="spinCoinBalance">0 Coins</div>
+        <div class="wallet-note">गेम से जीते गए Spin Coins[cite: 1, 2].</div>
+      </section>
+
+      <section class="wallet-card payment">
+        <div class="wallet-label">💰 Payment Wallet</div>
+        <div class="wallet-value" id="rewardBalance">₹0.00</div>
+        <div class="wallet-note">कनवर्ट किए गए रुपये[cite: 1, 2].</div>
+      </section>
+    </div>
+
+    <div class="conversion-rate">5 Spin Coins = ₹1[cite: 1, 2]</div>
+
+    <!-- DIRECT UPI PAYMENT FOR 5 EXTRA SPINS (₹30) -->
+    <section class="section-card" style="border: 2px solid #5ee0a0;">
+      <h2>🛒 Buy 5 Extra Spins for ₹30 (Direct UPI)</h2>
+      <p class="note" style="margin-top:0;margin-bottom:15px;">
+        नीचे दिए गए बटन से अपने UPI ऐप (GPay, PhonePe, Paytm) से ₹30 Pay करें और UTR नंबर डालकर तुरंत 5 Extra Spins पाएं।
+      </p>
+
+      <div class="form-group">
+        <label>Merchant UPI ID (जहाँ पैसे जाएंगे)</label>
+        <input type="text" id="merchantUpi" value="yourname@paytm" readonly style="color: #5ee0a0; font-weight: bold;">
+      </div>
+
+      <a href="#" id="upiPayBtn" class="gold-btn green-btn" target="_blank" style="margin-bottom: 15px;">
+        📲 Pay ₹30 via UPI App
+      </a>
+
+      <div class="form-group">
+        <label for="utrNumber">Payment करने के बाद UTR / Transaction ID डालें</label>
+        <input type="text" id="utrNumber" placeholder="उदा. 4235xxxxxxxx" required>
+      </div>
+
+      <button type="button" class="gold-btn" id="verifyAndAddSpinsBtn">
+        Verify Payment & Add 5 Spins
+      </button>
+      <div id="upiMessage" class="message"></div>
+    </section>
+
+    <!-- CONVERT SPIN COINS -->
+    <section class="section-card">
+      <h2>🔄 Convert Spin Coins</h2>
+      <form id="convertForm">
+        <div class="form-group">
+          <label for="convertCoins">कितने Spin Coins Convert करने हैं?</label>
+          <input type="number" id="convertCoins" min="5" step="5" placeholder="Example: 100" required>
+        </div>
+        <div class="form-group">
+          <label for="conversionPreview">आपको मिलेंगे</label>
+          <input type="text" id="conversionPreview" value="₹0.00" readonly>
+        </div>
+        <button type="submit" class="gold-btn" id="convertBtn">Convert Coins to Rupees</button>
+      </form>
+      <div id="convertMessage" class="message"></div>
+      <p class="note">Convert किए गए रुपये सीधे आपके Payment Wallet में जुड़ जाएंगे।</p>
+    </section>
+
+    <!-- UPI PAYOUT REQUEST -->
+    <section class="section-card">
+      <h2>💳 UPI Payout Request</h2>
+      <form id="payoutForm">
+        <div class="form-group">
+          <label for="payoutAmount">Payout Amount (₹)</label>
+          <input type="number" id="payoutAmount" placeholder="Enter amount" min="1" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label for="upiId">Your UPI ID</label>
+          <input type="text" id="upiId" placeholder="example@upi" maxlength="100" required>
+        </div>
+        <button type="submit" class="gold-btn" id="payoutSubmitBtn">Request UPI Payout</button>
+      </form>
+      <div id="payoutMessage" class="message"></div>
+      <p class="note">Payout Admin को भेजा जाएगा। वास्तविक UPI भुगतान Admin द्वारा अलग से किया जाएगा।</p>
+    </section>
+
+    <!-- PAYOUT HISTORY -->
+    <section class="section-card">
+      <h2>📋 My Payout History</h2>
+      <div id="payoutHistory">
+        <div class="empty">Loading payout history...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module" src="payment.js?v=9"></script>
+
+</body>
+</html>

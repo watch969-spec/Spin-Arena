@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Wallet | Spin Arena</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1220;color:white;font-family:Arial,sans-serif}
+header{padding:18px 6%;background:#121e31;display:flex;justify-content:space-between;align-items:center}
+.logo{color:#ffc857;font-size:21px;font-weight:bold;text-decoration:none}
+header a:last-child{color:white;text-decoration:none}
+.container{max-width:850px;margin:35px auto;padding:15px}
+h1{font-size:30px}
+.muted{color:#9aabc1;font-size:13px}
+.card{background:#142238;border:1px solid #2a3c56;border-radius:20px;padding:25px;margin-bottom:20px}
+.balance-card{background:linear-gradient(120deg,#47351c,#172b43);border-color:#85652f}
+.balance-label{font-size:12px;color:#e7c98c;letter-spacing:2px}
+.balance{font-size:43px;font-weight:900;color:#ffc857;margin:15px 0}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{padding:18px;background:#0b1729;border-radius:13px}
+.stat strong{display:block;font-size:24px;color:#ffc857;margin-bottom:7px}
+.stat span{font-size:12px;color:#9aabc1}
+h2{font-size:19px}
+.transaction{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 0;border-bottom:1px solid #2a3c56}
+.transaction:last-child{border:0}
+.transaction small{display:block;color:#9aabc1;margin-top:6px}
+.amount{color:#ffc857;font-weight:bold;white-space:nowrap}
+.notice{background:#302a1c;border:1px solid #70592e;color:#f3d79d;border-radius:12px;padding:14px;font-size:12px;line-height:1.6}
+button{width:100%;border:0;background:#ffc857;padding:14px;border-radius:12px;font-weight:bold;cursor:pointer}
+footer{text-align:center;color:#8191a8;padding:25px;font-size:12px}
+</style>
+</head>
+<body>
+
+<header>
+<a class="logo" href="index.html">✦ SPIN ARENA</a>
+<a href="index.html">← Back to Game</a>
+</header>
+
+<div class="container">
+<h1>My Wallet 🪙</h1>
+<p class="muted">Manage your virtual game coins.</p>
+
+<div class="card balance-card">
+<div class="balance-label">AVAILABLE VIRTUAL COINS</div>
+<div class="balance">🪙 <span id="balance">0</span></div>
+<p class="muted">Your current game balance</p>
+</div>
+
+<div class="stats">
+<div class="stat">
+<strong id="total">0</strong>
+<span>TOTAL COINS EARNED</span>
+</div>
+<div class="stat">
+<strong id="spins">0</strong>
+<span>TOTAL SPINS</span>
+</div>
+</div>
+
+<div class="card" style="margin-top:20px">
+<h2>📜 Transaction History</h2>
+<div id="transactions">
+<p class="muted">Loading transactions...</p>
+</div>
+</div>
+
+<div class="card">
+<div class="notice">
+Coins are virtual entertainment points only. They have no monetary value and cannot be purchased, transferred or withdrawn.
+</div>
+</div>
+
+<button onclick="location.href='index.html'">🎡 PLAY GAME</button>
+</div>
+
+<footer>© 2026 Spin Arena · Virtual Coins Only</footer>
+
+<script>
+const SUPABASE_URL="https://bfiisyiurhbqkiycugqn.supabase.co";
+const SUPABASE_KEY="sb_publishable_g0tupYqD8HC3k9lilwz24g_A8vSgnef";
+
+const db=window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+async function loadWallet(){
+
+ const {data:{session}}=await db.auth.getSession();
+
+ if(!session){
+  location.href="index.html";
+  return;
+ }
+
+ const user=session.user;
+
+ const {data:wallet,error:walletError}=await db
+ .from("player_wallets")
+ .select("balance")
+ .eq("user_id",user.id)
+ .single();
+
+ if(walletError){
+  document.getElementById("transactions").textContent=
+  walletError.message;
+  return;
+ }
+
+ document.getElementById("balance").textContent=
+ Number(wallet.balance).toLocaleString("en-IN");
+
+ const {data:history,error}=await db
+ .from("spin_history")
+ .select("reward,created_at")
+ .eq("user_id",user.id)
+ .order("created_at",{ascending:false});
+
+ if(error){
+  document.getElementById("transactions").textContent=error.message;
+  return;
+ }
+
+ const total=history.reduce((sum,item)=>sum+Number(item.reward),0);
+
+ document.getElementById("total").textContent=
+ total.toLocaleString("en-IN");
+
+ document.getElementById("spins").textContent=history.length;
+
+ const box=document.getElementById("transactions");
+ box.innerHTML="";
+
+ if(history.length===0){
+  box.innerHTML='<p class="muted">No transactions yet. Play your first spin!</p>';
+  return;
+ }
+
+ history.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="transaction";
+
+  const left=document.createElement("div");
+  const title=document.createElement("b");
+  title.textContent="🎡 Spin Reward";
+  const date=document.createElement("small");
+  date.textContent=new Date(item.created_at).toLocaleString();
+
+  left.append(title,date);
+
+  const amount=document.createElement("div");
+  amount.className="amount";
+  amount.textContent="+"+item.reward+" Coins";
+
+  row.append(left,amount);
+  box.append(row);
+ });
+}
+
+loadWallet();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "appId": "com.spinarena.game",
+  "appName": "Spin Arena",
+  "webDir": ".",
+  "bundledWebRuntime": false
+}

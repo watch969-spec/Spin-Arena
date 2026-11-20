@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>My Profile | Spin Arena</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1220;color:#fff;font-family:Arial,sans-serif}
+header{padding:18px 6%;display:flex;justify-content:space-between;align-items:center;background:#121e31;border-bottom:1px solid #263750}
+.logo{font-size:21px;font-weight:900;color:#ffc857;text-decoration:none}
+header a.back{color:#fff;text-decoration:none}
+.container{max-width:850px;margin:35px auto;padding:15px}
+.card{background:#142238;border:1px solid #2a3c56;border-radius:20px;padding:24px;margin-bottom:20px}
+.avatar{width:85px;height:85px;border-radius:50%;background:#ffc857;color:#172033;display:grid;place-items:center;font-size:35px;font-weight:bold;margin:auto}
+.profile{text-align:center}
+h1{font-size:28px;margin:15px 0 5px}
+.muted{color:#9aabc1;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:25px}
+.stat{background:#0b1729;padding:18px 8px;border-radius:14px;text-align:center}
+.stat strong{display:block;font-size:24px;color:#ffc857;margin-bottom:7px}
+.stat span{font-size:11px;color:#aabbd0}
+h2{font-size:19px;margin-top:0}
+.detail{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid #2a3c56;font-size:14px}
+.detail:last-child{border:0}
+.history{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid #2a3c56;font-size:13px}
+.reward{color:#ffc857;font-weight:bold}
+button{width:100%;padding:14px;border:0;border-radius:12px;background:#ffc857;color:#171717;font-weight:bold;font-size:15px;cursor:pointer}
+button.logout{background:#3a2530;color:#ff9ca9}
+.message{text-align:center;color:#ffc857;font-size:13px}
+footer{text-align:center;color:#8191a8;padding:25px;font-size:12px}
+@media(max-width:500px){.stats{gap:7px}.stat{padding:14px 4px}.stat strong{font-size:19px}.card{padding:18px}}
+</style>
+</head>
+<body>
+
+<header>
+<a href="index.html" class="logo">✦ SPIN ARENA</a>
+<a href="index.html" class="back">← Game</a>
+</header>
+
+<div class="container">
+
+<div class="card profile">
+<div class="avatar" id="avatar">U</div>
+<h1 id="userName">Loading...</h1>
+<p class="muted" id="userEmail">Please wait</p>
+
+<div class="stats">
+<div class="stat">
+<strong id="balance">0</strong>
+<span>VIRTUAL COINS</span>
+</div>
+<div class="stat">
+<strong id="used">0/5</strong>
+<span>SPINS USED TODAY</span>
+</div>
+<div class="stat">
+<strong id="remaining">5</strong>
+<span>SPINS LEFT TODAY</span>
+</div>
+</div>
+</div>
+
+<div class="card">
+<h2>👤 Account Details</h2>
+<div class="detail"><span>Email</span><b id="emailDetail">-</b></div>
+<div class="detail"><span>Account ID</span><b id="accountId">-</b></div>
+<div class="detail"><span>Account Status</span><b style="color:#53d6d0">Active</b></div>
+</div>
+
+<div class="card">
+<h2>🎡 Spin History</h2>
+<div id="history"><p class="muted">Loading history...</p></div>
+</div>
+
+<div class="card">
+<h2>🎁 Game Rules</h2>
+<p class="muted">• 5 free spins every day.</p>
+<p class="muted">• Earn virtual coins through spinning.</p>
+<p class="muted">• Daily spins reset at midnight UTC.</p>
+<p class="muted">• Virtual coins have no cash value.</p>
+</div>
+
+<div class="card">
+<button onclick="location.href='index.html'">PLAY GAME 🎡</button>
+<br><br>
+<button class="logout" id="logout">LOG OUT</button>
+<p class="message" id="message"></p>
+</div>
+
+</div>
+
+<footer>© 2026 Spin Arena · Virtual Coins Only</footer>
+
+<script>
+const SUPABASE_URL = "https://bfiisyiurhbqkiycugqn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_g0tupYqD8HC3k9lilwz24g_A8vSgnef";
+
+const db = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+async function loadProfile(){
+
+ const {data:{session},error:authError} =
+ await db.auth.getSession();
+
+ if(authError || !session){
+  location.href="index.html";
+  return;
+ }
+
+ const user=session.user;
+ const email=user.email || "";
+
+ document.getElementById("userName").textContent =
+ email.split("@")[0];
+
+ document.getElementById("userEmail").textContent=email;
+ document.getElementById("emailDetail").textContent=email;
+ document.getElementById("accountId").textContent=user.id;
+ document.getElementById("avatar").textContent=
+ email.charAt(0).toUpperCase() || "U";
+
+ // Wallet
+ const {data:wallet,error:walletError}=await db
+ .from("player_wallets")
+ .select("balance")
+ .eq("user_id",user.id)
+ .single();
+
+ if(walletError){
+  document.getElementById("message").textContent=
+  "Wallet: "+walletError.message;
+  return;
+ }
+
+ document.getElementById("balance").textContent=
+ Number(wallet.balance).toLocaleString("en-IN");
+
+ // Today's spin count (UTC)
+ const today=new Date().toISOString().slice(0,10);
+
+ const {data:usage,error:usageError}=await db
+ .from("daily_spin_usage")
+ .select("spin_count")
+ .eq("user_id",user.id)
+ .eq("spin_date",today)
+ .maybeSingle();
+
+ if(usageError){
+  document.getElementById("message").textContent=
+  "Spin data: "+usageError.message;
+  return;
+ }
+
+ const used=usage ? Number(usage.spin_count) : 0;
+
+ document.getElementById("used").textContent=used+"/5";
+ document.getElementById("remaining").textContent=
+ Math.max(0,5-used);
+
+ // Spin history
+ const {data:history,error:historyError}=await db
+ .from("spin_history")
+ .select("reward,created_at")
+ .eq("user_id",user.id)
+ .order("created_at",{ascending:false})
+ .limit(20);
+
+ const box=document.getElementById("history");
+
+ if(historyError){
+  box.textContent=historyError.message;
+  return;
+ }
+
+ if(!history || history.length===0){
+  box.innerHTML='<p class="muted">No spins played yet.</p>';
+  return;
+ }
+
+ box.innerHTML="";
+
+ history.forEach(item=>{
+  const row=document.createElement("div");
+  row.className="history";
+  const date=document.createElement("span");
+  date.textContent=new Date(item.created_at).toLocaleString();
+  const reward=document.createElement("b");
+  reward.className="reward";
+  reward.textContent="+"+item.reward+" Coins";
+  row.append(date,reward);
+  box.appendChild(row);
+ });
+}
+
+document.getElementById("logout").onclick=async()=>{
+ const {error}=await db.auth.signOut();
+ if(error){
+  document.getElementById("message").textContent=error.message;
+ }else{
+  location.href="index.html";
+ }
+};
+
+loadProfile();
+</script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel | Spin Arena</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    :root {
+      --admin-bg: #0b0e17;
+      --admin-card: rgba(20, 24, 36, 0.85);
+      --admin-border: rgba(232, 185, 78, 0.2);
+      --admin-gold: #f6c453;
+      --admin-accent: #65e5a5;
+    }
+    body {
+      background-color: var(--admin-bg);
+      color: #fff;
+    }
+    .edit-box {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--admin-border);
+      backdrop-filter: blur(10px);
+    }
+    .edit-box.hidden {
+      display: none;
+    }
+    .edit-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .edit-row label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 5px;
+      color: #cbd5e1;
+    }
+    .edit-row input, .edit-row select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #343b50;
+      background: #090b12;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .edit-row input:focus, .edit-row select:focus {
+      border-color: var(--admin-gold);
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .panel.page-panel {
+      background: var(--admin-card);
+      border: 1px solid var(--admin-border);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border-radius: 16px;
+    }
+    .grid-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 20px;
+    }
+    .stat-card h2 {
+      color: var(--admin-gold);
+      margin-top: 8px;
+      font-size: 32px;
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="./index.html">✦ SPIN<span>ARENA</span></a>
+  <nav class="main-nav">
+    <a class="nav-link" href="./index.html">Home</a>
+    <a class="nav-link" href="./wallet.html">Wallet</a>
+    <a class="nav-link" href="./profile.html">Profile</a>
+    <a class="nav-link" href="./payment.html">Rewards</a>
+  </nav>
+  <div class="top-actions">
+    <span id="adminEmail" class="muted">Checking...</span>
+    <button id="adminLogout" class="ghost" type="button">Logout</button>
+  </div>
+</header>
+
+<main class="wrap" style="max-width: 1100px; padding: 24px 16px;">
+  <section class="panel page-panel" style="margin-bottom: 24px;">
+    <div class="eyebrow" style="color: var(--admin-gold);">CONTROL CENTER</div>
+    <h1>Admin <em>Dashboard</em></h1>
+    <p class="muted">Manage users, wallets, conversion rates, extra spin packages, and UPI payouts seamlessly.</p>
+    <p id="adminMessage" class="message" style="margin-top: 12px; font-weight: 500;"></p>
+  </section>
+
+  <section id="adminContent" class="hidden">
+
+    <!-- STATS -->
+    <div class="grid-stats">
+      <div class="panel page-panel stat-card">
+        <div class="muted">Registered Users</div>
+        <h2 id="userCount">0</h2>
+      </div>
+      <div class="panel page-panel stat-card">
+        <div class="muted">Pending Payouts</div>
+        <h2 id="pendingPayoutCount" style="color: #ff7b7b;">0</h2>
+      </div>
+      <div class="panel page-panel stat-card">
+        <div class="muted">Total Payout Requests</div>
+        <h2 id="payoutCount">0</h2>
+      </div>
+    </div>
+
+    <!-- SYSTEM SETTINGS (CONVERSION RATE & EXTRA SPINS) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px;">
+      
+      <!-- Conversion Rate -->
+      <section class="panel page-panel" style="margin-bottom: 0;">
+        <div class="eyebrow" style="color: var(--admin-gold);">SETTINGS</div>
+        <h2>Coin <em>Conversion</em></h2>
+        <p class="muted small">Set how many Spin Coins equal ₹1 (Default: 5).</p>
+
+        <form id="rateForm" class="edit-row" style="align-items:end; margin-top:16px;">
+          <div>
+            <label for="coinsPerRupee">Spin Coins per ₹1</label>
+            <input id="coinsPerRupee" type="number" min="1" step="1" value="5" required>
+          </div>
+          <div>
+            <button class="primary" type="submit" id="saveRateBtn" style="width:100%;">Save Rate</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Extra Spin Package Settings -->
+      <section class="panel page-panel" style="margin-bottom: 0;">
+        <div class="eyebrow" style="color: var(--admin-gold);">STORE SETTINGS</div>
+        <h2>Extra Spin <em>Package</em></h2>
+        <p class="muted small">Configure price and spin count for extra spins purchase.</p>
+
+        <form id="extraSpinForm" class="edit-row" style="align-items:end; margin-top:16px;">
+          <div>
+            <label for="extraSpinPrice">Price (₹)</label>
+            <input id="extraSpinPrice" type="number" min="1" step="1" value="30" required>
+          </div>
+          <div>
+            <label for="extraSpinCount">Spins Count</label>
+            <input id="extraSpinCount" type="number" min="1" step="1" value="5" required>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <button class="primary" type="submit" id="saveExtraSpinBtn" style="width:100%;">Save Package</button>
+          </div>
+        </form>
+      </section>
+
+    </div>
+
+    <!-- PAYOUT REQUESTS WITH EDITING -->
+    <section class="panel page-panel" style="margin-bottom: 24px;">
+      <div class="eyebrow" style="color: var(--admin-gold);">MANUAL PAYMENTS</div>
+      <h2>Payout <em>Requests</em></h2>
+      <p class="muted small">
+        Verify UPI payments before marking Paid, or click <b>Edit</b> to correct UPI ID, amount, or status.
+      </p>
+      <div id="payoutList" style="margin-top: 16px;">Loading payout requests...</div>
+    </section>
+
+    <!-- REGISTERED USERS WITH BALANCE EDITING -->
+    <section class="panel page-panel">
+      <div class="eyebrow" style="color: var(--admin-gold);">USER MANAGEMENT</div>
+      <h2>Registered <em>Users</em></h2>
+      <p class="muted small">
+        Click <b>Edit Wallet</b> on any user to modify their Spin Coins or Payment Wallet (₹) balances.
+      </p>
+      <div id="userList" style="margin-top: 16px;">Loading users...</div>
+    </section>
+
+  </section>
+</main>
+
+<footer>© <span id="year"></span> Spin Arena Admin</footer>
+
+<script type="module" src="./admin.js?v=2"></script>
+</body>
+</html>

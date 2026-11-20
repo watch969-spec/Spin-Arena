@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101827">
+  <title>Spin Arena</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  
+<header class="topbar">
+  <a class="brand" href="./index.html">
+    <span class="brand-icon">✦</span> SPIN<span>ARENA</span>
+  </a>
+  <nav class="main-nav">
+    <a href="./index.html" class="nav-link active">Home</a>
+    <a href="./wallet.html" class="nav-link">Wallet</a>
+    <a href="./profile.html" class="nav-link">Profile</a>
+    <a href="./payment.html" class="nav-link">Payment</a>
+  </nav>
+  <div class="top-actions">
+    <span id="userLabel" class="muted">Guest</span>
+    <button id="logoutBtn" class="ghost hidden">Log out</button>
+  </div>
+</header>
+
+  <main class="wrap">
+    <section id="authPanel" class="panel auth-panel">
+      <div class="eyebrow">FREE VIRTUAL REWARDS</div>
+      <h1>Spin. Win. <em>Repeat.</em></h1>
+      <p class="muted">Play for fun and collect Spin Coins. 5 free spins every 24 hours.</p>
+      <div class="tabs">
+        <button id="loginTab" class="tab active">Login</button>
+        <button id="signupTab" class="tab">Create account</button>
+      </div>
+      <form id="authForm">
+        <label>Email<input id="email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+        <label>Password<input id="password" type="password" minlength="6" autocomplete="current-password" placeholder="At least 6 characters" required></label>
+        <button id="authSubmit" class="primary wide" type="submit">Login</button>
+        <p id="authMessage" class="message" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="gamePanel" class="hidden">
+      <div class="hero-row">
+        <div>
+          <div class="eyebrow">YOUR DAILY MOMENT OF FUN</div>
+          <h1>Spin for <em>coins</em></h1>
+          <p class="muted">5 free spins every 24 hours.</p>
+        </div>
+        <div class="wallet">
+          <span>YOUR WALLET</span>
+          <strong>🪙 <b id="balance">0</b></strong>
+          <small>Spin Coins</small>
+        </div>
+      </div>
+      <div class="game-grid">
+        <section class="panel wheel-panel">
+          <div class="wheel-shell">
+            <div class="pointer"></div>
+            <div id="wheel" class="wheel">
+              <div class="wheel-labels">
+                <span>10</span><span>20</span><span>50</span><span>100</span>
+                <span>25</span><span>5</span><span>75</span><span>15</span>
+              </div>
+              <div class="hub">SPIN</div>
+            </div>
+          </div>
+          <button id="spinBtn" class="primary spin-btn" disabled>Loading game…</button>
+          <p id="spinMessage" class="message" aria-live="polite">Sign in to play.</p>
+          <p id="cooldown" class="muted small"></p>
+        </section>
+        <aside class="panel side-panel">
+          <h2>How to play</h2>
+          <ol>
+            <li>Sign in to your account.</li>
+            <li>Tap the spin button up to 5 times every 24 hours.</li>
+            <li>Need more? Visit the <b>Payment</b> page to buy extra spins or convert coins.</li>
+          </ol>
+          <h2 class="history-title">Recent spins</h2>
+          <div id="history" class="history"><p class="muted">No spins yet.</p></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <footer>© <span id="year"></span> Spin Arena</footer>
+  <script type="module" src="./app.js?v=7"></script>
+</body>
+</html>
